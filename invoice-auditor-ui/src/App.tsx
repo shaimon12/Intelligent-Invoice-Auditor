@@ -127,7 +127,11 @@ function App() {
       .finally(() => { setUploading(false); });
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop } as any);
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, 
+    accept: {
+      'application/pdf': ['.pdf']
+    }
+  } as any);
 
   const handleDelete = async (id: number) => {
       if (!window.confirm("Are you sure you want to delete this invoice? This cannot be undone.")) return;
@@ -166,7 +170,7 @@ function App() {
                  <>
                    <div style={{fontSize: '32px', marginBottom: '10px'}}>☁️</div>
                    <h3>Click to upload invoice</h3>
-                   <p>PDF, JPG or PNG allowed</p>
+                   <p>Only PDF files allowed</p>
                  </>
               )}
             </div>

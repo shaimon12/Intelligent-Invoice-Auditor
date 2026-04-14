@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/shaimonrahman/Desktop/InvoiceAuditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj": {}
+    "/Users/shaimonrahman/Desktop/Intelligent-Invoice-Auditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj": {}
   },
   "projects": {
-    "/Users/shaimonrahman/Desktop/InvoiceAuditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj": {
+    "/Users/shaimonrahman/Desktop/Intelligent-Invoice-Auditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/shaimonrahman/Desktop/InvoiceAuditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj",
+        "projectUniqueName": "/Users/shaimonrahman/Desktop/Intelligent-Invoice-Auditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj",
         "projectName": "InvoiceAuditor.API",
-        "projectPath": "/Users/shaimonrahman/Desktop/InvoiceAuditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj",
+        "projectPath": "/Users/shaimonrahman/Desktop/Intelligent-Invoice-Auditor/backend-api-csharp/InvoiceAuditor.API/InvoiceAuditor.API.csproj",
         "packagesPath": "/Users/shaimonrahman/.nuget/packages/",
-        "outputPath": "/Users/shaimonrahman/Desktop/InvoiceAuditor/backend-api-csharp/InvoiceAuditor.API/obj/",
+        "outputPath": "/Users/shaimonrahman/Desktop/Intelligent-Invoice-Auditor/backend-api-csharp/InvoiceAuditor.API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/shaimonrahman/.nuget/NuGet/NuGet.Config"
