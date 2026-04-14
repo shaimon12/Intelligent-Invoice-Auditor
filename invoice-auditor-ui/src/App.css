@@ -1,0 +1,91 @@
+/* src/App.css - Version: Professional V2 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #3b82f6;
+  --bg-app: #f1f5f9;
+  --bg-surface: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+}
+
+body { font-family: 'Inter', sans-serif; color: var(--text-main); background: var(--bg-app); }
+
+/* --- LAYOUT --- */
+.app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* Header */
+.app-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  height: 60px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.2rem; }
+.logo-icon { font-size: 1.5rem; }
+.status-pill { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.dot { width: 6px; height: 6px; background: #166534; border-radius: 50%; }
+
+/* Workspace */
+.main-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* LEFT PANEL (Feed) */
+.feed-section { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+
+.upload-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.dropzone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; background: #f8fafc; }
+.dropzone:hover { border-color: var(--primary); background: #eff6ff; }
+
+.table-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.table-header { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.table-header h2 { margin: 0; font-size: 1rem; }
+
+.table-container { overflow-y: auto; flex: 1; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th { background: #f8fafc; padding: 12px 24px; text-align: left; font-weight: 500; color: var(--text-muted); border-bottom: 1px solid var(--border); position: sticky; top: 0; }
+td { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+tr { cursor: pointer; transition: 0.1s; }
+tr:hover { background: #f8fafc; }
+tr.active-row { background: #eff6ff; border-left: 4px solid var(--primary); }
+
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+.badge.completed { background: #dcfce7; color: #166534; }
+.badge.processing { background: #dbeafe; color: #1e40af; }
+.badge.failed { background: #fee2e2; color: #991b1b; }
+.badge.pending { background: #fef9c3; color: #854d0e; }
+
+/* --- RIGHT PANEL (Inspector) - THIS IS THE FIX --- */
+.inspector-panel {
+  width: 400px;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.05);
+}
+
+.inspector-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.inspector-header h3 { margin: 0; font-size: 1.1rem; }
+.close-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+
+.inspector-content { padding: 24px; overflow-y: auto; flex: 1; }
+
+/* Vendor Card (Avatar fix) */
+.vendor-card { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.vendor-avatar { width: 48px; height: 48px; background: var(--primary); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; }
+.vendor-info h4 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-main); }
+.vendor-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+
+/* Grid for Dates */
+.details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.detail-item label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+.detail-item div { font-size: 0.95rem; font-weight: 500; }
+
+/* Financial Summary (Spacing fix) */
+.financial-summary { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+.fin-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); }
+.fin-row.total { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 0; }
+
+/* Audit Box */
+.audit-alert { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; padding: 12px; border-radius: 8px; font-size: 0.85rem; line-height: 1.5; }

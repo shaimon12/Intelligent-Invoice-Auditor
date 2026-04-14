@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "rf5KL1R4ghZKS/RgfZr6Bg10GV5uUOkCW4Bf8tEO1+8=",
+  "Source": "InvoiceAuditor.API",
+  "BasePath": "_content/InvoiceAuditor.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

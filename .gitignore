@@ -1,0 +1,41 @@
+# =========================
+# Global & Root Level
+# =========================
+# Ignore all .env files anywhere in the project (CRITICAL)
+**/.env
+
+# Ignore root-level node_modules
+node_modules/
+
+# Ignore loose test PDF files in the root directory
+*.pdf
+
+# =========================
+# Frontend (React/Vite)
+# =========================
+invoice-auditor-ui/node_modules/
+invoice-auditor-ui/dist/
+invoice-auditor-ui/build/
+
+# =========================
+# Backend (.NET 8 Web API)
+# =========================
+backend-api-csharp/bin/
+backend-api-csharp/obj/
+backend-api-csharp/Uploads/
+
+# =========================
+# Worker (Python AI Script)
+# =========================
+ai-worker-python/.venv/
+ai-worker-python/venv/
+ai-worker-python/__pycache__/
+ai-worker-python/*.pyc
+
+# Ignore macOS system files anywhere in the project
+**/.DS_Store
+
+# IDEs and Editors
+.vscode/
+.vs/
+.idea/
