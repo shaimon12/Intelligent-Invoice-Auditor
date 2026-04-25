@@ -136,3 +136,26 @@ tr.active-row { background: #eef2ff; border-left: 4px solid var(--primary); }
 .audit-box { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px; }
 .audit-title { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 700; color: #92400e; margin-bottom: 8px; }
 .audit-text { font-size: 0.85rem; color: #b45309; line-height: 1.5; }
+/* Navigation Buttons */
+.nav-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: #f3f4f6;
+  color: var(--text-main);
+}
+
+.nav-btn.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}

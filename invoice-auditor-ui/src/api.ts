@@ -27,3 +27,7 @@ export const uploadInvoice = async (file: File) => {
 export const deleteInvoice = async (id: number) => {
     await axios.delete(`${API_BASE_URL}/Invoices/${id}`);
 };
+export const fetchAnalytics = async () => {
+    const response = await axios.get(`${API_BASE_URL}/Analytics/summary`);
+    return response.data;
+};

@@ -1,0 +1,13 @@
+# AI & LangChain
+openai
+langchain
+langchain-openai
+
+# PDF Processing
+pypdf
+
+# Database
+mysql-connector-python
+
+# Environment Variables
+python-dotenv
