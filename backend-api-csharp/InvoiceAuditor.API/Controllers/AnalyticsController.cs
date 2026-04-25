@@ -19,11 +19,13 @@ namespace InvoiceAuditor.API.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> GetSummary()
         {
-            // Only count invoices successfully processed by your worker.py
+            // Filter strictly for COMPLETED invoices
             var completedInvoices = _context.Invoices.Where(i => i.ProcessingStatus == "COMPLETED");
 
             var totalSpend = await completedInvoices.SumAsync(i => i.ExtractedTotalAmount ?? 0);
-            var totalCount = await _context.Invoices.CountAsync();
+            
+            // FIX: Count ONLY the completed invoices
+            var totalCount = await completedInvoices.CountAsync(); 
 
             var categoryData = await completedInvoices
                 .GroupBy(i => i.Category ?? "Uncategorized")
@@ -33,7 +35,6 @@ namespace InvoiceAuditor.API.Controllers
                 })
                 .ToListAsync();
 
-            // 3. Monthly Spend (using actual Invoice Date, falling back to Upload Date if AI failed)
             var monthlyData = await completedInvoices
                 .GroupBy(i => new { 
                     Year = (i.ExtractedDate ?? i.CreatedAt).Year, 

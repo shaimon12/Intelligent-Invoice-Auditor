@@ -4,6 +4,7 @@ using InvoiceAuditor.API.Data;
 using InvoiceAuditor.API.Models;
 using System.IO; 
 using System;
+using System.Security.Cryptography;
 
 namespace InvoiceAuditor.API.Controllers
 {
@@ -21,40 +22,44 @@ namespace InvoiceAuditor.API.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> UploadInvoice(IFormFile file)
         {
-            // 1. Check if a file was actually sent
-            if (file == null || file.Length == 0)
-                return BadRequest("No file was uploaded.");
-
-            // 2. Validate the file extension
+            if (file == null || file.Length == 0) return BadRequest("No file was uploaded.");
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (extension != ".pdf")
-                return BadRequest("Only .pdf files are permitted.");
+            if (extension != ".pdf") return BadRequest("Only .pdf files are permitted.");
 
-            // 3. Validate the MIME type (to prevent renamed malicious files)
-            if (file.ContentType != "application/pdf")
-                return BadRequest("Invalid file format detected.");
+            // 1. Read file into memory safely (prevents Stream Position bugs)
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
 
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-            if (!Directory.Exists(uploadsFolder))
+            // 2. Calculate the exact SHA-256 Hash
+            string fileHash;
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
             {
-                Directory.CreateDirectory(uploadsFolder);
+                var hashBytes = sha256.ComputeHash(fileBytes);
+                fileHash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
             }
 
-            // 4. Generate a secure, unique filename for the physical disk
+            // 3. Check if this exact hash exists in the database
+            var isDuplicate = await _context.Invoices.AnyAsync(i => i.FileHash == fileHash);
+
+            // 4. Save to physical disk
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            Directory.CreateDirectory(uploadsFolder);
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            
+            await System.IO.File.WriteAllBytesAsync(filePath, fileBytes);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // 5. Save the record to the database
+            // 5. Save record to DB
             var invoice = new Invoice
             {
-                OriginalFileName = file.FileName,             // The pretty name for the UI
-                StoredFilePath = $"Uploads/{uniqueFileName}", // The safe, unique path for the backend
-                ProcessingStatus = "PENDING",
+                OriginalFileName = file.FileName,
+                StoredFilePath = $"Uploads/{uniqueFileName}",
+                FileHash = fileHash,
+                IsDuplicate = isDuplicate,
+                
+                // This is the magic line. If it's a duplicate, Worker.py will ignore it!
+                ProcessingStatus = isDuplicate ? "DUPLICATE" : "PENDING",
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -63,7 +68,6 @@ namespace InvoiceAuditor.API.Controllers
 
             return CreatedAtAction(nameof(GetInvoices), new { id = invoice.InvoiceId }, invoice);
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {

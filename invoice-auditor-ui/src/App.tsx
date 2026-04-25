@@ -28,6 +28,7 @@ export interface Invoice {
     category?: string;
     paymentDetails?: string;
     lineItems?: LineItem[];
+    isDuplicate?: boolean;
 }
 
 const formatCurrency = (amount?: number) => {
@@ -73,9 +74,12 @@ function App() {
   const refreshInvoices = async () => {
     try {
       const response = await fetchInvoices();
+      // ADD THIS LINE RIGHT HERE:
+      console.log("📡 Backend Data:", response);
       const validData = (response as any[]).map((item) => ({
         id: item.invoiceId || item.id,
         fileName: item.originalFileName || item.fileName || 'Unknown File',
+        isDuplicate: item.isDuplicate || false,
         status: item.processingStatus || item.status || 'Pending',
         uploadDate: formatUtcDate(item.createdAt || item.uploadDate),
         vendorName: item.extractedVendorName || item.vendorName || '-',
@@ -217,6 +221,7 @@ function App() {
                               <td style={{color:'#6b7280', fontWeight: 600}}>{inv.id}</td>
                               <td>
                                  <span className={`badge ${inv.status.toLowerCase()}`}>{inv.status}</span>
+                                 {inv.isDuplicate && <span style={{marginLeft: '8px', fontSize: '1rem'}} title="Exact Duplicate File">👯</span>}
                               </td>
                               <td>
                                 <div style={{fontWeight: 600, color:'#111827'}}>{inv.vendorName}</div>
@@ -257,6 +262,15 @@ function App() {
                           title="Invoice Preview"
                       />
                     </div>
+                    {selectedInvoice.isDuplicate && (
+                      <div style={{marginBottom: '24px', padding: '12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', display: 'flex', gap: '12px', alignItems: 'center'}}>
+                          <div style={{fontSize: '24px'}}>🛑</div>
+                          <div>
+                              <div style={{fontWeight: 600, color: '#334155'}}>Duplicate File Detected</div>
+                              <div style={{fontSize: '0.85rem', color: '#64748b'}}>This exact PDF has already been uploaded. It has been excluded from analytics and AI processing to prevent double-counting.</div>
+                          </div>
+                      </div>
+                    )}
 
                     <div className="vendor-block">
                       <div className="vendor-avatar">

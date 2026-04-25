@@ -44,8 +44,17 @@ namespace InvoiceAuditor.API.Models
         // Audit Fields
         public decimal? ConfidenceScore { get; set; }
         public bool IsFlaggedForFraud { get; set; } = false;
+
+        // ... existing fields ...
+
+        // --- Duplicate Detection ---
+        public string? FileHash { get; set; }              // SHA-256 hash of the PDF
+        public bool IsDuplicate { get; set; } = false;     // True if hash already exists
+
+// ... existing fields ...
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? ProcessedAt { get; set; }
+        
     }
 }
