@@ -66,6 +66,8 @@ npm run dev
 ```
 
 ## Screenshots
-*<img width="1312" height="696" alt="image" src="https://github.com/user-attachments/assets/16273c54-4b9c-4e1c-86bb-3c805c114a38" />*
 
-*<img width="1429" height="805" alt="image" src="https://github.com/user-attachments/assets/388c12fb-0890-4bf7-92bb-dda2a7905e5e" />*
+<img width="1429" height="791" alt="image" src="https://github.com/user-attachments/assets/1f50e943-769c-447b-b917-f8976e9dcc4f" />
+
+<img width="1304" height="696" alt="image" src="https://github.com/user-attachments/assets/6483490c-d4eb-43c6-85ec-7935f2c3eba2" />
+
