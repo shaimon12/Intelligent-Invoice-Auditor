@@ -33,8 +33,12 @@ namespace InvoiceAuditor.API.Controllers
                 })
                 .ToListAsync();
 
+            // 3. Monthly Spend (using actual Invoice Date, falling back to Upload Date if AI failed)
             var monthlyData = await completedInvoices
-                .GroupBy(i => new { i.CreatedAt.Year, i.CreatedAt.Month })
+                .GroupBy(i => new { 
+                    Year = (i.ExtractedDate ?? i.CreatedAt).Year, 
+                    Month = (i.ExtractedDate ?? i.CreatedAt).Month 
+                })
                 .Select(g => new {
                     month = $"{g.Key.Month}/{g.Key.Year}",
                     total = (double)g.Sum(i => i.ExtractedTotalAmount ?? 0),
