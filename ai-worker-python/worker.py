@@ -6,6 +6,7 @@ from mysql.connector import Error
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_openai import ChatOpenAI
+import requests
 
 # --- 1. CONFIGURATION ---
 load_dotenv()
@@ -207,6 +208,15 @@ def start_worker():
 
                     cursor.execute("UPDATE Invoices SET ProcessingStatus = 'PROCESSING' WHERE InvoiceId = %s", (invoice_id,))
                     conn.commit()
+                    # ==========================================
+                    # NEW: PING #1 (Tell UI processing started)
+                    # ==========================================
+                    try:
+                        webhook_url = f"http://127.0.0.1:5238/api/invoices/{invoice_id}/notify-complete"
+                        requests.post(webhook_url, timeout=3)
+                    except Exception:
+                        pass # Ignore errors, this is just a visual update
+                    # ==========================================
 
                     success = process_invoice(invoice_id, invoice['StoredFilePath'])
 
@@ -215,6 +225,17 @@ def start_worker():
                     conn.commit()
                     
                     print(f"[<] Database updated. Invoice #{invoice_id} is {new_status}.")
+                    # ==========================================
+                    # NEW: SIGNALR WEBHOOK PING
+                    # ==========================================
+                    try:
+                        # Assuming your .NET API runs on port 5238 based on your React code
+                        webhook_url = f"http://localhost:5238/api/invoices/{invoice_id}/notify-complete"
+                        requests.post(webhook_url, timeout=3)
+                        print(f"[~] Successfully pinged UI for real-time refresh.")
+                    except Exception as e:
+                        print(f"[!] Warning: Could not ping UI webhook: {e}")
+                    # ==========================================
                 
             except Error as e:
                 print(f"Database error: {e}")

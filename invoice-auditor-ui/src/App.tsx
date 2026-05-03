@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { fetchInvoices, uploadInvoice, deleteInvoice } from './api';
 import Dashboard from './components/Dashboard';
+import * as signalR from '@microsoft/signalr';
 import './App.css';
 
 const API_BASE = 'http://localhost:5238/api';
@@ -110,11 +111,41 @@ function App() {
     }
   };
 
+// ==========================================
+  // NEW: REAL-TIME SIGNALR CONNECTION (React 18 Strict Mode Fix)
+  // ==========================================
+  // ==========================================
+  // NEW: REAL-TIME SIGNALR CONNECTION (Mac & Safari Safe)
+  // ==========================================
   useEffect(() => {
     refreshInvoices();
-    const interval = setInterval(refreshInvoices, 5000);
-    return () => clearInterval(interval);
+
+    const connection = new signalR.HubConnectionBuilder()
+      // 1. Swapped localhost to 127.0.0.1 to fix Mac DNS routing issues
+      // 2. Removed skipNegotiation so SignalR can safely handshake
+      .withUrl("http://127.0.0.1:5238/hubs/invoices", {
+        // Force Server-Sent Events to bypass Safari's WebSocket blocker
+        transport: signalR.HttpTransportType.ServerSentEvents 
+     }) 
+      .withAutomaticReconnect()
+      .build();
+
+    const startPromise = connection.start()
+      .then(() => console.log("🟢 Connected to SignalR Real-Time Hub"))
+      .catch(err => console.error("🔴 SignalR Connection Error: ", err));
+
+    connection.on("InvoiceUpdated", (invoiceId) => {
+      console.log(`⚡ Event Received: Invoice #${invoiceId} finished processing!`);
+      refreshInvoices(); 
+    });
+
+    return () => {
+      startPromise.then(() => {
+        connection.stop();
+      });
+    };
   }, []); 
+  // ==========================================
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;

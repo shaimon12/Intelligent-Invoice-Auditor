@@ -5,6 +5,8 @@ using InvoiceAuditor.API.Models;
 using System.IO; 
 using System;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.SignalR;      // NEW: Required for SignalR
+using InvoiceAuditor.API.Hubs;           // NEW: References your new Hub folder
 
 namespace InvoiceAuditor.API.Controllers
 {
@@ -13,10 +15,13 @@ namespace InvoiceAuditor.API.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<InvoiceHub> _hubContext; // NEW: Holds the SignalR context
 
-        public InvoicesController(AppDbContext context)
+        // NEW: Injected IHubContext into the constructor
+        public InvoicesController(AppDbContext context, IHubContext<InvoiceHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         [HttpPost("upload")]
@@ -68,6 +73,7 @@ namespace InvoiceAuditor.API.Controllers
 
             return CreatedAtAction(nameof(GetInvoices), new { id = invoice.InvoiceId }, invoice);
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
@@ -94,21 +100,42 @@ namespace InvoiceAuditor.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice == null) return NotFound("Invoice not found.");
+            var targetInvoice = await _context.Invoices.FindAsync(id);
+            if (targetInvoice == null) return NotFound("Invoice not found.");
 
-            // 1. Delete the unique physical file from the Uploads folder
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), invoice.StoredFilePath);
-            if (System.IO.File.Exists(filePath))
+            // 1. Find ALL invoices that share this exact FileHash (Originals + Duplicates)
+            var allLinkedInvoices = await _context.Invoices
+                .Where(i => i.FileHash == targetInvoice.FileHash)
+                .ToListAsync();
+
+            foreach (var invoice in allLinkedInvoices)
             {
-                System.IO.File.Delete(filePath);
+                // 2. Delete the physical file for each record
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), invoice.StoredFilePath);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
             }
 
-            // 2. Delete the record from Database
-            _context.Invoices.Remove(invoice);
+            // 3. Delete ALL the records from the Database in one swoop
+            _context.Invoices.RemoveRange(allLinkedInvoices);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // ==========================================
+        // NEW WEBHOOK FOR PYTHON WORKER
+        // ==========================================
+        [HttpPost("{id}/notify-complete")]
+        public async Task<IActionResult> NotifyComplete(int id)
+        {
+            // Broadcast a message to all connected React clients
+            // "InvoiceUpdated" is the exact event name React will listen for
+            await _hubContext.Clients.All.SendAsync("InvoiceUpdated", id);
+            
+            return Ok(new { message = "Frontend notified via SignalR" });
         }
     }
 }
